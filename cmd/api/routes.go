@@ -6,7 +6,7 @@ import (
 
 func (app *application) routes() *chi.Mux {
 	r := chi.NewMux()
-	r.Get("/socket", app.socketHandler)
-
+	r.Get("/create", app.createGame)
+	r.Get("/join", app.joinGame)
 	return r
 }

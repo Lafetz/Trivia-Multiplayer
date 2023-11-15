@@ -5,13 +5,33 @@ import (
 	"net/http"
 )
 
-func (app *application) socketHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) createGame(w http.ResponseWriter, r *http.Request) {
 	conn, err := websocketUpgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
-	client := NewClient(conn, app.manager)
-	app.manager.addClient(client)
+	name := "xof"
+	client := NewClient(conn, app.manager, name)
+
+	room := Room{
+		clientList: make(ClientList),
+		owner:      client,
+		name:       name,
+	}
+	app.manager.addRoom(&room, name)
+	app.manager.joinRoom(client, name)
+	go client.readMessage()
+	go client.sendMessage()
+}
+func (app *application) joinGame(w http.ResponseWriter, r *http.Request) {
+	conn, err := websocketUpgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	name := "xof"
+	client := NewClient(conn, app.manager, name)
+
+	app.manager.joinRoom(client, name)
 	go client.readMessage()
 	go client.sendMessage()
 }

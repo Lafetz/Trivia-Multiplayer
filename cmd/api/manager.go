@@ -16,7 +16,7 @@ var (
 )
 
 type Manager struct {
-	clientList ClientList
+	roomList RoomList
 	sync.RWMutex
 	handlers map[string]EventHandler
 }
@@ -36,27 +36,39 @@ func (m *Manager) routeEvents(event Event, c *Client) error {
 
 }
 func SendMessage(event Event, c *Client) error {
+	for k, v := range c.manager.roomList {
+		if k == c.room {
+			for k, _ := range v.clientList {
+				k.egress <- event
+			}
+		}
+	}
 	fmt.Println(event.Type, string(event.Payload))
 	return nil
 }
 func NewManager() *Manager {
 	m := &Manager{
-		handlers:   make(map[string]EventHandler),
-		clientList: make(ClientList),
+		handlers: make(map[string]EventHandler),
+		roomList: make(RoomList),
 	}
 	m.setupEventHandlers()
 	return m
 }
-func (m *Manager) addClient(client *Client) {
+func (m *Manager) joinRoom(client *Client, name string) {
 	m.Lock()
 	defer m.Unlock()
-	m.clientList[client] = true
+	m.roomList[name].clientList[client] = true
 }
-func (m *Manager) removeClient(client *Client) {
+func (m *Manager) removeClient(client *Client, name string) {
 	m.Lock()
 	defer m.Unlock()
-	if _, ok := m.clientList[client]; ok {
+	if _, ok := m.roomList[name].clientList[client]; ok {
 		client.connection.Close()
-		delete(m.clientList, client)
+		delete(m.roomList[name].clientList, client)
 	}
+}
+func (m *Manager) addRoom(room *Room, name string) {
+	m.Lock()
+	defer m.Unlock()
+	m.roomList[name] = *room
 }

@@ -18,19 +18,21 @@ type ClientList map[*Client]bool
 type Client struct {
 	connection *websocket.Conn
 	manager    *Manager
+	room       string
 	egress     chan Event
 }
 
-func NewClient(conn *websocket.Conn, manager *Manager) *Client {
+func NewClient(conn *websocket.Conn, manager *Manager, room string) *Client {
 	return &Client{
 		connection: conn,
 		manager:    manager,
+		room:       room,
 		egress:     make(chan Event),
 	}
 }
-func (c *Client) sendMessage() {
+func (c *Client) sendMessage() { //from server to client
 	defer func() {
-		c.manager.removeClient(c)
+		c.manager.removeClient(c, c.room)
 	}()
 	ticker := time.NewTicker(pingInterval)
 	for {
@@ -59,9 +61,9 @@ func (c *Client) sendMessage() {
 		}
 	}
 }
-func (c *Client) readMessage() {
+func (c *Client) readMessage() { // from client to server
 	defer func() {
-		c.manager.removeClient(c)
+		c.manager.removeClient(c, c.room)
 
 	}()
 	if err := c.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
