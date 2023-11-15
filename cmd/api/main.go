@@ -14,6 +14,7 @@ func main() {
 	app := application{
 		manager: manager,
 	}
+
 	fmt.Println("server on 4000")
 	err := http.ListenAndServe(":4000", app.routes())
 	if err != nil {

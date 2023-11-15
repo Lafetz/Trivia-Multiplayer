@@ -19,6 +19,8 @@ type Client struct {
 	connection *websocket.Conn
 	manager    *Manager
 	room       string
+	score      int32
+	answer     string
 	egress     chan Event
 }
 
