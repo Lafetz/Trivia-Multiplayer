@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -21,7 +20,15 @@ type Manager struct {
 	handlers map[string]EventHandler
 }
 
-func (m *Manager) setupEventHandlers() {
+func NewManager() *Manager {
+	m := &Manager{
+		handlers: make(map[string]EventHandler),
+		roomList: make(RoomList),
+	}
+	m.setupEventHandlers()
+	return m
+}
+func (m *Manager) setupEventHandlers() { // functions based on events
 	m.handlers[EventSendMessage] = SendMessage
 }
 func (m *Manager) routeEvents(event Event, c *Client) error {
@@ -35,25 +42,7 @@ func (m *Manager) routeEvents(event Event, c *Client) error {
 	}
 
 }
-func SendMessage(event Event, c *Client) error {
-	for k, v := range c.manager.roomList {
-		if k == c.room {
-			for k, _ := range v.clientList {
-				k.egress <- event
-			}
-		}
-	}
-	fmt.Println(event.Type, string(event.Payload))
-	return nil
-}
-func NewManager() *Manager {
-	m := &Manager{
-		handlers: make(map[string]EventHandler),
-		roomList: make(RoomList),
-	}
-	m.setupEventHandlers()
-	return m
-}
+
 func (m *Manager) joinRoom(client *Client, name string) {
 	m.Lock()
 	defer m.Unlock()

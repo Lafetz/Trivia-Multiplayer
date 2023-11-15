@@ -1,6 +1,9 @@
 package main
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Event struct {
 	Type    string          `json:"type"`
@@ -15,4 +18,16 @@ const (
 type SendMessageEvent struct {
 	Message string `json:"message"`
 	From    string `json:"from"`
+}
+
+func SendMessage(event Event, c *Client) error {
+	for k, v := range c.manager.roomList {
+		if k == c.room {
+			for k, _ := range v.clientList {
+				k.egress <- event
+			}
+		}
+	}
+	fmt.Println(event.Type, string(event.Payload))
+	return nil
 }
