@@ -18,7 +18,7 @@ type Question struct {
 	Text   string
 	A      string
 	B      string
-	Answer string
+	Answer int32
 }
 
 func generate(q *Question) {
@@ -27,7 +27,7 @@ func generate(q *Question) {
 		Text:   "ss",
 		A:      "hello",
 		B:      "kol",
-		Answer: "B",
+		Answer: 2,
 	}
 
 }
@@ -54,7 +54,7 @@ func (room *Room) startGame() {
 
 //			}
 //		}
-//	}
-func (room *Room) addUserAnswer() {
+// //	}
+// func (room *Room) addUserAnswer(c *Client,answer ) {
 
-}
+// }

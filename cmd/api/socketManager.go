@@ -30,6 +30,7 @@ func NewManager() *Manager {
 }
 func (m *Manager) setupEventHandlers() { // functions based on events
 	m.handlers[EventSendMessage] = SendMessage
+	m.handlers[EventSendAnswer] = SendAnswr
 }
 func (m *Manager) routeEvents(event Event, c *Client) error {
 	if handler, ok := m.handlers[event.Type]; ok {
