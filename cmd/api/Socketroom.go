@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type RoomList map[string]Room
+type RoomList map[string]*Room
 type Room struct {
 	clientList      ClientList
 	owner           string
@@ -22,8 +22,8 @@ type Question struct {
 	Answer int32
 }
 
-func generateQuestion(q *Question) {
-	q = &Question{
+func (room *Room) generateQuestion() {
+	room.currentQuestion = Question{
 		id:     0,
 		Text:   "ss",
 		A:      "hello",
@@ -34,13 +34,14 @@ func generateQuestion(q *Question) {
 }
 func (room *Room) startGame() {
 
-	ticker := time.NewTicker(3 * time.Second)
+	ticker := time.NewTicker(2 * time.Second)
 	counter := 0
 	fmt.Println("game about to start")
 	for range ticker.C {
 
 		if counter == 3 {
 			fmt.Println("game ended")
+			room.scoreRound()
 			break
 		}
 		fmt.Print("count ", counter)
@@ -54,7 +55,7 @@ func (room *Room) startGame() {
 }
 
 func (room *Room) roundStart() {
-	generateQuestion(&room.currentQuestion)
+	room.generateQuestion()
 	room.restUserAnswer()
 
 }
@@ -77,13 +78,9 @@ func (room *Room) sendQuestion() {
 	}
 }
 
-// func (room *Room) scoreRound() {
-// 	for c := range room.clientList {
-// 		if c.answer == 0 {
+func (room *Room) scoreRound() {
+	for c := range room.clientList {
+		fmt.Print(c.score, " ")
+	}
 
-//			}
-//		}
-// //	}
-// func (room *Room) addUserAnswer(c *Client,answer ) {
-
-// }
+}

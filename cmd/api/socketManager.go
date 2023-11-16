@@ -61,9 +61,9 @@ func (m *Manager) removeClient(client *Client, name string) {
 func (m *Manager) addRoom(room *Room, name string) {
 	m.Lock()
 	defer m.Unlock()
-	m.roomList[name] = *room
+	m.roomList[name] = room
 }
 func (m *Manager) getRoom(name string) *Room {
 	room := m.roomList[name]
-	return &room
+	return room
 }

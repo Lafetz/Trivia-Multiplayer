@@ -38,18 +38,21 @@ func SendMessage(event Event, c *Client) error {
 
 func SendAnswr(event Event, c *Client) error {
 	fmt.Println("Event send answer")
-	if c.score != 0 {
+	if c.answer != 0 {
 		fmt.Println("user submited again")
 		return nil
 
 	}
 	userAnswer, err := strconv.Atoi(string(event.Payload))
+	fmt.Println("payload", event.Payload, "is ", userAnswer)
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("test", userAnswer, " ", c.room.currentQuestion.Answer)
 	if int32(userAnswer) == c.room.currentQuestion.Answer {
 		c.score++
 	}
+	c.answer = int32(userAnswer)
 	return nil
 }
 func StartGame(event Event, c *Client) error {
