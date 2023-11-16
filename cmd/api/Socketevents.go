@@ -13,8 +13,10 @@ type Event struct {
 type EventHandler func(event Event, c *Client) error
 
 const (
-	EventSendMessage = "send_message"
-	EventSendAnswer  = "send_answer"
+	EventSendMessage  = "send_message"
+	EventSendAnswer   = "send_answer"
+	EventGameStart    = "game_start"
+	EventSendQuestion = "send_Question"
 )
 
 type SendMessageEvent struct {
@@ -30,21 +32,6 @@ func SendMessage(event Event, c *Client) error {
 			}
 		}
 	}
-	// if event.Type == EventUserAnswer {
-	// 	if c.score != 0 {
-	// 		fmt.Println("user submited again")
-	// 		return nil
-
-	// 	}
-	// 	userAnswer, err := strconv.Atoi(string(event.Payload))
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// 	if int32(userAnswer) == c.room.currentQuestion.Answer {
-	// 		c.score++
-	// 	}
-
-	// }
 	fmt.Println(event.Type, string(event.Payload))
 	return nil
 }
@@ -63,5 +50,10 @@ func SendAnswr(event Event, c *Client) error {
 	if int32(userAnswer) == c.room.currentQuestion.Answer {
 		c.score++
 	}
+	return nil
+}
+func StartGame(event Event, c *Client) error {
+	fmt.Println("start game")
+	go c.room.startGame()
 	return nil
 }

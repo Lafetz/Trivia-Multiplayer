@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -21,7 +22,7 @@ type Question struct {
 	Answer int32
 }
 
-func generate(q *Question) {
+func generateQuestion(q *Question) {
 	q = &Question{
 		id:     0,
 		Text:   "ss",
@@ -37,14 +38,42 @@ func (room *Room) startGame() {
 	counter := 0
 	fmt.Println("game about to start")
 	for range ticker.C {
-		//add scores based on past
-		generate(&room.currentQuestion)
-		counter++
-		if counter == 4 {
+
+		if counter == 3 {
 			fmt.Println("game ended")
 			break
 		}
-		fmt.Println("question: ", counter, " ", room.currentQuestion)
+		fmt.Print("count ", counter)
+		counter++
+		//
+		room.roundStart()
+		room.sendQuestion()
+		///
+		//fmt.Println("question: ", counter, " ", room.currentQuestion)
+	}
+}
+
+func (room *Room) roundStart() {
+	generateQuestion(&room.currentQuestion)
+	room.restUserAnswer()
+
+}
+func (room *Room) restUserAnswer() {
+	for c := range room.clientList {
+		c.answer = 0
+	}
+}
+func (room *Room) sendQuestion() {
+	payload, err := json.Marshal(room.currentQuestion)
+	if err != nil {
+		fmt.Println(err)
+	}
+	event := Event{
+		Type:    EventSendQuestion,
+		Payload: payload,
+	}
+	for c := range room.clientList {
+		c.egress <- event
 	}
 }
 
