@@ -11,13 +11,13 @@ func (app *application) createGame(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	name := "xof"
-	client := NewClient(conn, app.manager, name)
-
 	room := Room{
 		clientList: make(ClientList),
-		owner:      client,
+		owner:      "abel",
 		name:       name,
 	}
+	client := NewClient(conn, app.manager, &room)
+
 	app.manager.addRoom(&room, name)
 	app.manager.joinRoom(client, name)
 	go client.readMessage()
@@ -29,7 +29,8 @@ func (app *application) joinGame(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	name := "xof"
-	client := NewClient(conn, app.manager, name)
+	room := app.manager.getRoom(name)
+	client := NewClient(conn, app.manager, room)
 
 	app.manager.joinRoom(client, name)
 	go client.readMessage()

@@ -22,7 +22,7 @@ type SendMessageEvent struct {
 
 func SendMessage(event Event, c *Client) error {
 	for k, v := range c.manager.roomList {
-		if k == c.room {
+		if k == c.room.name {
 			for k, _ := range v.clientList {
 				k.egress <- event
 			}

@@ -61,3 +61,7 @@ func (m *Manager) addRoom(room *Room, name string) {
 	defer m.Unlock()
 	m.roomList[name] = *room
 }
+func (m *Manager) getRoom(name string) *Room {
+	room := m.roomList[name]
+	return &room
+}

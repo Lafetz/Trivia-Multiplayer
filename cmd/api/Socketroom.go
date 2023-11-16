@@ -8,7 +8,7 @@ import (
 type RoomList map[string]Room
 type Room struct {
 	clientList      ClientList
-	owner           *Client
+	owner           string
 	name            string
 	currentQuestion Question
 	// gameEnded  bool
@@ -47,6 +47,14 @@ func (room *Room) startGame() {
 		fmt.Println("question: ", counter, " ", room.currentQuestion)
 	}
 }
-func (room *Room) scoreRound() {
+
+// func (room *Room) scoreRound() {
+// 	for c := range room.clientList {
+// 		if c.answer == 0 {
+
+//			}
+//		}
+//	}
+func (room *Room) addUserAnswer() {
 
 }
