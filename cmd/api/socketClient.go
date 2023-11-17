@@ -22,6 +22,7 @@ type Client struct {
 	score      int32
 	answer     int32
 	egress     chan Event
+	name       string
 }
 
 func NewClient(conn *websocket.Conn, manager *Manager, room *Room) *Client {
@@ -82,12 +83,14 @@ func (c *Client) readMessage() { // from client to server
 			}
 			break
 		}
-		var request Event
-		if err := json.Unmarshal(payload, &request); err != nil {
+		var request UserEvent
+		request.from = c.name
+		if err := json.Unmarshal(payload, &request.event); err != nil {
 			log.Println(err)
 			break
 
 		}
+
 		if err := c.manager.routeEvents(request, c); err != nil {
 			log.Println(err)
 

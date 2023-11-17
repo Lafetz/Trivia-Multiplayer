@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -28,20 +29,20 @@ func (room *Room) generateQuestion() {
 		Text:   "ss",
 		A:      "hello",
 		B:      "kol",
-		Answer: 2,
+		Answer: rand.Int31n(4),
 	}
 
 }
 func (room *Room) startGame() {
 
-	ticker := time.NewTicker(2 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	counter := 0
 	fmt.Println("game about to start")
 	for range ticker.C {
 
 		if counter == 3 {
 			fmt.Println("game ended")
-			room.scoreRound()
+			room.scoreEvent()
 			break
 		}
 		fmt.Print("count ", counter)
@@ -78,9 +79,40 @@ func (room *Room) sendQuestion() {
 	}
 }
 
-func (room *Room) scoreRound() {
-	for c := range room.clientList {
-		fmt.Print(c.score, " ")
-	}
+// func (room *Room) sendFinalScores() {
 
+// 	for c := range room.clientList {
+
+//			fmt.Print(c.score, " ")
+//		}
+//	}
+func (room *Room) scoreEvent() {
+	array := []UserScore{}
+	for c := range room.clientList {
+		array = append(array, UserScore{
+			name:  c.name,
+			score: int(c.score),
+		})
+	}
+	type myJSON struct {
+		Array []UserScore
+	}
+	fmt.Println(array)
+	payload, err := json.Marshal(myJSON{Array: array})
+	if err != nil {
+		fmt.Println(err)
+	}
+	event := Event{
+		Type:    EventFinalScores,
+		Payload: payload,
+	}
+	for c := range room.clientList {
+		c.egress <- event
+	}
 }
+
+// func (room *Room) sendFinalScores() {
+// 	for c := range room.clientList {
+// 		fmt.Print(c.score, " ")
+// 	}
+// }

@@ -33,9 +33,9 @@ func (m *Manager) setupEventHandlers() { // functions based on events
 	m.handlers[EventSendAnswer] = SendAnswr
 	m.handlers[EventGameStart] = StartGame
 }
-func (m *Manager) routeEvents(event Event, c *Client) error {
-	if handler, ok := m.handlers[event.Type]; ok {
-		if err := handler(event, c); err != nil {
+func (m *Manager) routeEvents(UserEvent UserEvent, c *Client) error {
+	if handler, ok := m.handlers[UserEvent.event.Type]; ok {
+		if err := handler(UserEvent.event, c); err != nil {
 			return err
 		}
 		return nil
