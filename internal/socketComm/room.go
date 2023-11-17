@@ -1,7 +1,6 @@
-package main
+package socketComm
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"time"
@@ -42,14 +41,14 @@ func (room *Room) startGame() {
 
 		if counter == 3 {
 			fmt.Println("game ended")
-			room.scoreEvent()
+			SendScores(room)
 			break
 		}
 		fmt.Print("count ", counter)
 		counter++
 		//
 		room.roundStart()
-		room.sendQuestion()
+		sendQuestion(room)
 		///
 		//fmt.Println("question: ", counter, " ", room.currentQuestion)
 	}
@@ -65,54 +64,18 @@ func (room *Room) restUserAnswer() {
 		c.answer = 0
 	}
 }
-func (room *Room) sendQuestion() {
-	payload, err := json.Marshal(room.currentQuestion)
-	if err != nil {
-		fmt.Println(err)
-	}
-	event := Event{
-		Type:    EventSendQuestion,
-		Payload: payload,
-	}
-	for c := range room.clientList {
-		c.egress <- event
+func NewRoom(name string) *Room {
+	return &Room{
+		clientList: make(ClientList),
+		owner:      "abel",
+		name:       name,
 	}
 }
 
-// func (room *Room) sendFinalScores() {
-
-// 	for c := range room.clientList {
-
-//			fmt.Print(c.score, " ")
-//		}
-//	}
-func (room *Room) scoreEvent() {
-	array := []UserScore{}
-	for c := range room.clientList {
-		array = append(array, UserScore{
-			name:  c.name,
-			score: int(c.score),
-		})
-	}
-	type myJSON struct {
-		Array []UserScore
-	}
-	fmt.Println(array)
-	payload, err := json.Marshal(myJSON{Array: array})
-	if err != nil {
-		fmt.Println(err)
-	}
-	event := Event{
-		Type:    EventFinalScores,
-		Payload: payload,
-	}
-	for c := range room.clientList {
-		c.egress <- event
-	}
+type UserScore struct {
+	Name  string
+	Score int
 }
-
-// func (room *Room) sendFinalScores() {
-// 	for c := range room.clientList {
-// 		fmt.Print(c.score, " ")
-// 	}
-// }
+type ScoresList struct {
+	Scores []UserScore
+}

@@ -1,4 +1,4 @@
-package main
+package socketComm
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	websocketUpgrader = websocket.Upgrader{
+	WebsocketUpgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
@@ -45,7 +45,7 @@ func (m *Manager) routeEvents(UserEvent UserEvent, c *Client) error {
 
 }
 
-func (m *Manager) joinRoom(client *Client, name string) {
+func (m *Manager) JoinRoom(client *Client, name string) {
 	m.Lock()
 	defer m.Unlock()
 	m.roomList[name].clientList[client] = true
@@ -58,12 +58,12 @@ func (m *Manager) removeClient(client *Client, name string) {
 		delete(m.roomList[name].clientList, client)
 	}
 }
-func (m *Manager) addRoom(room *Room, name string) {
+func (m *Manager) AddRoom(room *Room, name string) {
 	m.Lock()
 	defer m.Unlock()
 	m.roomList[name] = room
 }
-func (m *Manager) getRoom(name string) *Room {
+func (m *Manager) GetRoom(name string) *Room {
 	room := m.roomList[name]
 	return room
 }

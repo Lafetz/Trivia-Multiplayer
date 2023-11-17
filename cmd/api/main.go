@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/lafetz/trivia-go/internal/socketComm"
 )
 
 type application struct {
-	manager *Manager
+	manager *socketComm.Manager
 }
 
 func main() {
-	manager := NewManager()
+	manager := socketComm.NewManager()
 	app := application{
 		manager: manager,
 	}

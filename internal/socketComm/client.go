@@ -1,4 +1,4 @@
-package main
+package socketComm
 
 import (
 	"encoding/json"
@@ -33,7 +33,7 @@ func NewClient(conn *websocket.Conn, manager *Manager, room *Room) *Client {
 		egress:     make(chan Event),
 	}
 }
-func (c *Client) sendMessage() { //from server to client
+func (c *Client) SendMessage() { //from server to client
 	defer func() {
 		c.manager.removeClient(c, c.room.name)
 	}()
@@ -64,7 +64,7 @@ func (c *Client) sendMessage() { //from server to client
 		}
 	}
 }
-func (c *Client) readMessage() { // from client to server
+func (c *Client) ReadMessage() { // from client to server
 	defer func() {
 		c.manager.removeClient(c, c.room.name)
 

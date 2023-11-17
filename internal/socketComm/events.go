@@ -1,4 +1,4 @@
-package main
+package socketComm
 
 import (
 	"encoding/json"
@@ -32,13 +32,7 @@ type SendMessageEvent struct {
 }
 
 func SendMessage(event Event, c *Client) error {
-	// for k, v := range c.manager.roomList {
-	// 	if k == c.room.name {
-	// 		for k, _ := range v.clientList {
-	// 			k.egress <- event
-	// 		}
-	// 	}
-	// }
+
 	forwardPayload(event, c.room)
 	fmt.Println(event.Type, string(event.Payload))
 	return nil
@@ -70,22 +64,38 @@ func StartGame(event Event, c *Client) error {
 	go c.room.startGame()
 	return nil
 }
+
+func SendScores(room *Room) {
+	array := []UserScore{}
+	for c := range room.clientList {
+		array = append(array, UserScore{
+			Name:  c.name,
+			Score: int(c.score),
+		})
+	}
+	event := createEvent(EventFinalScores, &ScoresList{Scores: array})
+	forwardPayload(event, room)
+}
+
+func sendQuestion(room *Room) {
+	event := createEvent(EventSendQuestion, room.currentQuestion)
+	forwardPayload(event, room)
+}
+
+// helper fucs
+func createEvent(eventType string, payload interface{}) Event {
+	payloadJson, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return Event{
+		Type:    eventType,
+		Payload: payloadJson,
+	}
+}
 func forwardPayload(event Event, room *Room) error { //sends payload to everyone in a room
-	for k := range room.clientList {
-		k.egress <- event
+	for c := range room.clientList {
+		c.egress <- event
 	}
 	return nil
 }
-
-type UserScore struct {
-	name  string
-	score int
-}
-
-// func createEvent(eventType string, payload interface{}) *Event {
-// 	payloadJson, err := json.Marshal(payload)
-// 	return &Event{
-// 		Type:    eventType,
-// 		Payload: payload,
-// 	}
-// }
