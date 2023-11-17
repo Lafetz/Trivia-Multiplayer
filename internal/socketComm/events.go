@@ -21,6 +21,7 @@ const (
 	EventSendMessage = "send_message"
 	EventSendAnswer  = "send_answer"
 	//from server
+	EventError        = "error"
 	EventGameStart    = "game_start"
 	EventSendQuestion = "send_Question"
 	EventFinalScores  = "final_scores"
@@ -51,7 +52,7 @@ func SendAnswr(event Event, c *Client) error {
 		fmt.Println(err)
 		return err
 	}
-	fmt.Println("test", userAnswer, " ", c.room.currentQuestion.Answer)
+	//fmt.Println("test", userAnswer, " ", c.room.currentQuestion.Answer)
 	if int32(userAnswer) == c.room.currentQuestion.Answer {
 		c.score++
 	}
