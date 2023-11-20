@@ -21,7 +21,7 @@ type Client struct {
 	room       *Room
 	score      int32
 	answer     int32
-	egress     chan Event
+	egress     chan *Event
 	name       string
 }
 
@@ -30,7 +30,7 @@ func NewClient(conn *websocket.Conn, manager *Manager, room *Room) *Client {
 		connection: conn,
 		manager:    manager,
 		room:       room,
-		egress:     make(chan Event),
+		egress:     make(chan *Event),
 	}
 }
 func (c *Client) SendMessage() { //from server to client
