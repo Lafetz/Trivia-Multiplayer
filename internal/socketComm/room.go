@@ -11,11 +11,11 @@ type Room struct {
 	clientList      ClientList
 	owner           string
 	name            string
-	currentQuestion Question
+	CurrentQuestion Question
 	// gameEnded  bool
 }
 type Question struct {
-	id     int32
+	Id     int32
 	Text   string
 	A      string
 	B      string
@@ -23,8 +23,8 @@ type Question struct {
 }
 
 func (room *Room) generateQuestion() {
-	room.currentQuestion = Question{
-		id:     0,
+	room.CurrentQuestion = Question{
+		Id:     0,
 		Text:   "ss",
 		A:      "hello",
 		B:      "kol",

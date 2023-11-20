@@ -2,7 +2,6 @@ package socketComm
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 )
 
@@ -33,27 +32,26 @@ type SendMessageEvent struct {
 }
 
 func SendMessage(event *Event, c *Client) error {
-
+	failedMessageClient(c)
 	forwardPayload(event, c.room)
-	fmt.Println(event.Type, string(event.Payload))
 	return nil
 }
 
 func SendAnswr(event *Event, c *Client) error {
-	fmt.Println("Event send answer")
+
 	if c.answer != 0 {
-		fmt.Println("user submited again")
+		// fmt.Println("user submited again")
 		return nil
 
 	}
 	userAnswer, err := strconv.Atoi(string(event.Payload))
-	fmt.Println("payload", event.Payload, "is ", userAnswer)
+
 	if err != nil {
-		fmt.Println(err)
+
 		return err
 	}
-	//fmt.Println("test", userAnswer, " ", c.room.currentQuestion.Answer)
-	if int32(userAnswer) == c.room.currentQuestion.Answer {
+
+	if int32(userAnswer) == c.room.CurrentQuestion.Answer {
 		c.score++
 	}
 	c.answer = int32(userAnswer)
@@ -61,12 +59,11 @@ func SendAnswr(event *Event, c *Client) error {
 	return nil
 }
 func StartGame(event *Event, c *Client) error {
-	fmt.Println("start game")
 	go c.room.startGame()
 	return nil
 }
 
-func SendScores(room *Room) {
+func SendScores(room *Room) error {
 	array := []UserScore{}
 	for c := range room.clientList {
 		array = append(array, UserScore{
@@ -76,26 +73,26 @@ func SendScores(room *Room) {
 	}
 	event, err := createEvent(EventFinalScores, &ScoresList{Scores: array})
 	if err != nil {
-		fmt.Println(err)
-		return
+
+		return err
 	}
 	forwardPayload(event, room)
+	return nil
 }
 
-func sendQuestion(room *Room) {
-	event, err := createEvent(EventSendQuestion, room.currentQuestion)
+func sendQuestion(room *Room) error {
+	event, err := createEvent(EventSendQuestion, room.CurrentQuestion)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	forwardPayload(event, room)
+	return nil
 }
 
 // helper fucs
 func createEvent(eventType string, payload interface{}) (*Event, error) {
 	payloadJson, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	event := Event{
@@ -104,9 +101,9 @@ func createEvent(eventType string, payload interface{}) (*Event, error) {
 	}
 	return &event, nil
 }
-func forwardPayload(event *Event, room *Room) error { //sends payload to everyone in a room
+func forwardPayload(event *Event, room *Room) { //sends payload to everyone in a room
 	for c := range room.clientList {
 		c.egress <- event
 	}
-	return nil
+
 }
