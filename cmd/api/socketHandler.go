@@ -7,7 +7,18 @@ import (
 	"github.com/lafetz/trivia-go/internal/socketComm"
 )
 
-func (app *application) createGame(w http.ResponseWriter, r *http.Request) {
+func (app *application) listGameHandler(w http.ResponseWriter, r *http.Request) {
+	rooms := app.manager.ListRooms()
+	// if len(rooms) == 0 {
+	//return
+	// }
+	err := app.writeJSON(w, http.StatusFound, rooms, nil)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+func (app *application) createGameHandler(w http.ResponseWriter, r *http.Request) {
 	name := "xof"
 	room := socketComm.NewRoom(name)
 	conn, err := socketComm.WebsocketUpgrader.Upgrade(w, r, nil)
@@ -20,7 +31,7 @@ func (app *application) createGame(w http.ResponseWriter, r *http.Request) {
 	go client.ReadMessage()
 	go client.SendMessage()
 }
-func (app *application) joinGame(w http.ResponseWriter, r *http.Request) {
+func (app *application) joinGameHandler(w http.ResponseWriter, r *http.Request) {
 	name := "xof"
 	room := app.manager.GetRoom(name)
 

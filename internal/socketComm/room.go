@@ -9,9 +9,11 @@ import (
 type RoomList map[string]*Room
 type Room struct {
 	clientList      ClientList
-	owner           string
-	name            string
-	CurrentQuestion Question
+	Id              string
+	Owner           string
+	Name            string
+	CurrentQuestion Question `json:"-"`
+	started         bool
 	// gameEnded  bool
 }
 type Question struct {
@@ -67,8 +69,8 @@ func (room *Room) restUserAnswer() {
 func NewRoom(name string) *Room {
 	return &Room{
 		clientList: make(ClientList),
-		owner:      "abel",
-		name:       name,
+		Owner:      "abel",
+		Name:       name,
 	}
 }
 

@@ -34,7 +34,7 @@ func NewClient(conn *websocket.Conn, manager *Manager, room *Room) *Client {
 }
 func (c *Client) SendMessage() { //from server to client
 	defer func() {
-		c.manager.removeClient(c, c.room.name)
+		c.manager.removeClient(c, c.room.Name)
 	}()
 	ticker := time.NewTicker(pingInterval)
 	for {
@@ -66,7 +66,7 @@ func (c *Client) SendMessage() { //from server to client
 func (c *Client) ReadMessage() { // from client to server
 
 	defer func() {
-		c.manager.removeClient(c, c.room.name)
+		c.manager.removeClient(c, c.room.Name)
 
 	}()
 	if err := c.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {

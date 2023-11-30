@@ -33,8 +33,8 @@ func main() {
 		return
 	}
 	app.db = db
-	fmt.Println("server on 4000")
-	err = http.ListenAndServe(":4000", app.routes())
+	fmt.Println("server on 3000")
+	err = http.ListenAndServe(":3000", app.routes())
 	if err != nil {
 		fmt.Println(err)
 		return

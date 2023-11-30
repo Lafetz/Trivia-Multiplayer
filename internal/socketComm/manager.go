@@ -20,6 +20,8 @@ type Manager struct {
 	handlers map[string]EventHandler
 }
 
+type rooms map[string]*Room
+
 func NewManager() *Manager {
 	m := &Manager{
 		handlers: make(map[string]EventHandler),
@@ -66,4 +68,15 @@ func (m *Manager) AddRoom(room *Room, name string) {
 func (m *Manager) GetRoom(name string) *Room {
 	room := m.roomList[name]
 	return room
+}
+func (m *Manager) ListRooms() []*Room {
+	list := []*Room{}
+	for _, r := range m.roomList {
+		if r.started {
+			continue
+		}
+		list = append(list, r)
+
+	}
+	return list
 }
